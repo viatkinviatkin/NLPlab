@@ -3,7 +3,8 @@ import pymorphy2
 import string
 from nltk.corpus import stopwords
 from nltk.probability import FreqDist
-
+from nltk.stem import PorterStemmer
+from nltk.stem.snowball import SnowballStemmer
 def Tokens(text):
     tokens = nltk.word_tokenize(text)
     tokens = [i for i in tokens if (i not in string.punctuation)]
@@ -18,6 +19,15 @@ def Normalize(tokens):
      for token in tokens:
          nToken = morph.parse(token)[0]
          normalizedTokens.append(nToken.normal_form) 
+     return normalizedTokens
+
+def NormalizeByStemmer(tokens):
+     normalizedTokens = []
+     stemmer = SnowballStemmer("russian")
+     for token in tokens:
+         nToken = stemmer.stem(token)
+         print(nToken)
+         normalizedTokens.append(nToken) 
      return normalizedTokens 
         
 def WriteFile(fileName, freqDictionary):
@@ -29,9 +39,13 @@ def ReadFile(fileName):
     with open(fileName, "r", encoding='utf-8') as file:
         return file.read()
 
-
+## Задание 1
 text = ReadFile("input.txt")
 tokens = Tokens(text)
 normalizedTokens = Normalize(tokens)
 freqDictionary = FreqDist(normalizedTokens)
 WriteFile("output.txt", freqDictionary)
+
+#Задание 2 Stemmer для нормализации
+print("Pymorphy2 normalize:", Normalize(tokens))
+print("nltk.stemmer normalize:", NormalizeByStemmer(tokens))
